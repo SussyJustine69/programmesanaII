@@ -29,13 +29,15 @@ class List:
         ieprieksejais = self.pirmais
         for i in range(indekss-1):
             if ieprieksejais.next == None:
-                return self.add(jaunais_info)
+                self.add(jaunais_info)
+                return
             ieprieksejais = ieprieksejais.next
            
         ieprieksejais.next = Node(jaunais_info, pec = ieprieksejais.next, pirms=ieprieksejais)
         jaunais = ieprieksejais.next
-        jaunais.next.prev = jaunais
-        return 
+        if jaunais.next:
+            jaunais.next.prev = jaunais
+        return jaunais
         
     
     def read(self):
@@ -44,6 +46,15 @@ class List:
             esosais.read()
             esosais = esosais.next
         return
+    
+    def len(self):
+        garums = 0
+        skaititajs = self.pirmais
+        while skaititajs:
+            garums += 1
+            skaititajs = skaititajs.next
+        return garums
+
 
     def get(self, index):
         if index == 0:
@@ -67,7 +78,9 @@ class List:
             ieliekama_node.prev.next = None
             ieliekama_node.prev = None
 
-        turpinajums = self.get(index+1)
+        turpinajums = None
+        if index < self.len()-1:
+            turpinajums = self.get(index+1)
         # turpinajums.read()
         if index == 0:
             self.pirmais = ieliekama_node
@@ -87,7 +100,8 @@ class List:
         # esosais.read()
         esosais.prev = ieprieksejais
         esosais.next = turpinajums
-        esosais.next.prev = esosais
+        if esosais.next:
+            esosais.next.prev = esosais
 
         return esosais
 
@@ -95,6 +109,10 @@ class List:
 
 
     def switch(self, index1, index2):
+        if index1>index2:
+            self.switch(index2, index1)
+            return
+        
         kopija_pirmais = self.get(index1)
         kopija_otrais = self.get(index2)
 
@@ -105,29 +123,23 @@ class List:
 
         self.put(kopija_pirmais, index2)
 
-    def len(self):
-        garums = 0
-        skaititajs = self.pirmais
-        while skaititajs:
-            garums += 1
-            skaititajs = skaititajs.next
-        return garums
+        return
 
-        
     def sort(self):
         skaititajs = self.len()
-        print(skaititajs)
         for i in range(skaititajs):
             testa_objekts = self.pirmais
             testa_index = 0
-            #self.get(i).read()    
             while testa_objekts.next:
+                # print(i, testa_index, end="")
+                # self.get(testa_index).read()
                 if str(testa_objekts.info)[0]<str(testa_objekts.next.info)[0]:
-                    self.switch(testa_index, testa_index+1)
+                    self.switch(testa_index,testa_index+1)
+                    testa_objekts = self.get(testa_index)
                 testa_objekts = testa_objekts.next
                 testa_index += 1
-            self.read()
-        return
+        return 
+
 
 
 print("Sākotnējais saraksts:")
@@ -142,12 +154,10 @@ print("Nomainīts elements pie indeksa 3:")
 
 saraksts.put(Node("tests"),3)
 saraksts.read()
-print("Apmainīti vietām elementi pie indeksa 2 un 4:")
-saraksts.switch(2,4)
+print("Apmainīti vietām elementi pie indeksa 0 un 2:")
+saraksts.switch(2,0)
 saraksts.read()
 
 print("Sakārtots:")
-#saraksts.sort()
-#saraksts.read()
-for i in range(saraksts.len()):
-    saraksts.get(i).read()#
+saraksts.sort()
+saraksts.read()
